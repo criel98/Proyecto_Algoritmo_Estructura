@@ -4,35 +4,158 @@
  */
 package package_formulario;
 
-/**
- *
- * @author hp
- */
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+import package_clase.Paciente;
+
 public class From_Registro_Cliente extends javax.swing.JFrame {
 
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(From_Registro_Cliente.class.getName());
+    private ArrayList<Paciente> listaPacientes = new ArrayList<>();
+    private DefaultTableModel modeloTabla;
+    private final String RUTA_ARCHIVO = "pacientes.csv";
 
-    private void cargar_genero() {
+    // metodo guardar CSV
+    private void guardarEnCSV() {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(RUTA_ARCHIVO))) {
+            for (Paciente p : listaPacientes) {
+                bw.write(p.toCSV());
+                bw.newLine();
+            }
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(this, "Error al guardar en el archivo CSV: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    // metodo leer csv
+    private void cargarDesdeCSV() {
+        File archivo = new File(RUTA_ARCHIVO);
+        if (!archivo.exists()) {
+            return; // Si el archivo no existe aún, termina el método pacíficamente
+        }
+
+        try (BufferedReader br = new BufferedReader(new FileReader(archivo))) {
+            String linea;
+            listaPacientes.clear();
+            modeloTabla.setRowCount(0);
+
+            while ((linea = br.readLine()) != null) {
+                String[] datos = linea.split(";");
+                if (datos.length == 8) {
+                    Paciente p = new Paciente(datos[0], datos[1], datos[2], datos[3], datos[4], datos[5], datos[6], datos[7]);
+                    listaPacientes.add(p);
+
+                    // Mostramos en la JTable
+                    String nombreCompleto = p.getNombre() + " " + p.getApellidoPaterno() + " " + p.getApellidoMaterno();
+                    Object[] fila = {p.getTipoDocumento(), p.getNumeroDocumento(), nombreCompleto, p.getFechaNacimiento(), p.getGenero(), p.getTelefono()};
+                    modeloTabla.addRow(fila);
+                }
+            }
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(this, "Error al cargar los datos desde el archivo CSV: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void cargar_datos_formulario() {
+        modeloTabla = (DefaultTableModel) tblPacientes.getModel();
+        // Cargar combo documento
+        this.cboTipoDocumento.removeAllItems(); 
+        this.cboTipoDocumento.addItem("Seleccione");
+        this.cboTipoDocumento.addItem("DNI");
+        this.cboTipoDocumento.addItem("Carnet Extranjeria");
+
+        // Cargar combo genero
+        this.cboGenero.removeAllItems();
         this.cboGenero.addItem("Seleccione");
         this.cboGenero.addItem("Masculino");
         this.cboGenero.addItem("Femenino");
     }
 
-    private void tipo_documento() {
-        this.cboTipoDocumento.addItem("Seleccione");
-        this.cboTipoDocumento.addItem("DNI");
-        this.cboTipoDocumento.addItem("Carnet Extranjeria");
+    // funcion para limpiar campos del formulario
+    private void limpiarCampos() {
+        cboTipoDocumento.setSelectedIndex(0);
+        cboGenero.setSelectedIndex(0);
+        txtNumeroDocumento.setText("");
+        txtNombre.setText("");
+        txtApellidoPaterno.setText("");
+        txtApellidoMaterno.setText("");
+        txtTelefono.setText("");
+
+        cboTipoDocumento.requestFocus(); // Devuelve el foco al inicio
+    }
+
+    // funcion para validar que todos los campós esten llenos
+    private boolean validar_campos_formulario() {
+        String fechaNac = txtFechaNacim.getText().trim();
+
+        // validar tipo de documento
+        if (cboTipoDocumento.getSelectedIndex() == 0) {
+            JOptionPane.showMessageDialog(this, "Debe seleccionar un Tipo de Documento", "Validación", JOptionPane.WARNING_MESSAGE);
+            cboTipoDocumento.requestFocus();
+            return false;
+        }
+
+        // validar numero de documento
+        if (txtNumeroDocumento.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Debe ingresar el número de documento", "Validación", JOptionPane.WARNING_MESSAGE);
+            txtNumeroDocumento.requestFocus();
+            return false;
+        }
+
+        // validar nombres y ambos Apellidos
+        if (txtNombre.getText().trim().isEmpty()
+                || txtApellidoPaterno.getText().trim().isEmpty()
+                || txtApellidoMaterno.getText().trim().isEmpty()) {
+
+            JOptionPane.showMessageDialog(this, "El Nombre, Apellido Paterno y Apellido Materno son campos obligatorios.", "Validación", JOptionPane.WARNING_MESSAGE);
+            return false;
+        }
+
+        // validar estructura de la fecha de nacimiento
+        if (fechaNac.equals("//") || fechaNac.length() < 10) {
+            JOptionPane.showMessageDialog(this, "Por favor, complete la Fecha de Nacimiento correctamente (Día/Mes/Año).", "Validación", JOptionPane.WARNING_MESSAGE);
+            txtFechaNacim.requestFocus();
+            return false;
+        }
+
+        // validar selección de género
+        if (cboGenero.getSelectedIndex() == 0) {
+            JOptionPane.showMessageDialog(this, "Debe seleccionar un Género", "Validación", JOptionPane.WARNING_MESSAGE);
+            cboGenero.requestFocus();
+            return false;
+        }
+
+        // validar teléfono de contacto
+        if (txtTelefono.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Debe rellenar el número de contacto", "Validación", JOptionPane.WARNING_MESSAGE);
+            txtTelefono.requestFocus();
+            return false;
+        }
+
+        return true;
     }
 
     public From_Registro_Cliente() {
+
         initComponents();
-        cargar_genero();
-        tipo_documento();
+        cargar_datos_formulario();
+
         this.setLocationRelativeTo(null);
+        // Diseño bordes redondeados para el formulario
         txtNombre.putClientProperty("JComponent.roundRect", true);
         txtApellidoPaterno.putClientProperty("JComponent.roundRect", true);
         txtApellidoMaterno.putClientProperty("JComponent.roundRect", true);
         txtNumeroDocumento.putClientProperty("JComponent.roundRect", true);
+        txtTelefono.putClientProperty("JComponent.roundRect", true);
+        
+        cargarDesdeCSV();
     }
 
     /**
@@ -45,15 +168,15 @@ public class From_Registro_Cliente extends javax.swing.JFrame {
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
-        jButton1 = new javax.swing.JButton();
+        btnRegistrar = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         tblPacientes = new javax.swing.JTable();
         jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
         jLabel10 = new javax.swing.JLabel();
-        jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
+        btnLimpiar = new javax.swing.JButton();
+        btnCerrar = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
@@ -70,29 +193,40 @@ public class From_Registro_Cliente extends javax.swing.JFrame {
         jLabel6 = new javax.swing.JLabel();
         jLabel12 = new javax.swing.JLabel();
         txtTelefono = new javax.swing.JTextField();
+        txtFechaNacim = new javax.swing.JFormattedTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Registro de Clientes - Posta Médica");
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
 
-        jButton1.setBackground(new java.awt.Color(0, 102, 204));
-        jButton1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jButton1.setForeground(new java.awt.Color(255, 255, 255));
-        jButton1.setText("Registrar Cliente");
+        btnRegistrar.setBackground(new java.awt.Color(0, 102, 204));
+        btnRegistrar.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        btnRegistrar.setForeground(new java.awt.Color(255, 255, 255));
+        btnRegistrar.setText("Registrar Cliente");
+        btnRegistrar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRegistrarActionPerformed(evt);
+            }
+        });
 
         tblPacientes.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         tblPacientes.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+
             },
             new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
+                "Tipo Doc.", "N° Documento", "Paciente", "F. Nacimiento", "Género", "Teléfono"
             }
-        ));
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
         tblPacientes.setToolTipText("holza");
         tblPacientes.setRowHeight(30);
         jScrollPane1.setViewportView(tblPacientes);
@@ -111,13 +245,18 @@ public class From_Registro_Cliente extends javax.swing.JFrame {
 
         jLabel10.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/groups_94.png"))); // NOI18N
 
-        jButton2.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jButton2.setForeground(new java.awt.Color(51, 51, 51));
-        jButton2.setText("Limpiar");
+        btnLimpiar.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        btnLimpiar.setForeground(new java.awt.Color(51, 51, 51));
+        btnLimpiar.setText("Limpiar");
 
-        jButton3.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jButton3.setForeground(new java.awt.Color(51, 51, 51));
-        jButton3.setText("Cerrar");
+        btnCerrar.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        btnCerrar.setForeground(new java.awt.Color(51, 51, 51));
+        btnCerrar.setText("Cerrar");
+        btnCerrar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCerrarActionPerformed(evt);
+            }
+        });
 
         jPanel2.setBackground(new java.awt.Color(255, 255, 255));
         jPanel2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(220, 224, 230)));
@@ -144,6 +283,14 @@ public class From_Registro_Cliente extends javax.swing.JFrame {
 
         jLabel12.setText("Telefono:");
 
+        try {
+            txtFechaNacim.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.MaskFormatter("##/##/####")));
+        } catch (java.text.ParseException ex) {
+            ex.printStackTrace();
+        }
+        txtFechaNacim.setText("  /  /    ");
+        txtFechaNacim.setCursor(new java.awt.Cursor(java.awt.Cursor.TEXT_CURSOR));
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -153,9 +300,10 @@ public class From_Registro_Cliente extends javax.swing.JFrame {
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jLabel3)
                     .addComponent(jLabel1)
-                    .addComponent(txtNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtNombre, javax.swing.GroupLayout.DEFAULT_SIZE, 132, Short.MAX_VALUE)
                     .addComponent(jLabel11)
-                    .addComponent(cboTipoDocumento, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(cboTipoDocumento, 0, 132, Short.MAX_VALUE)
+                    .addComponent(txtFechaNacim))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(jPanel2Layout.createSequentialGroup()
@@ -207,7 +355,8 @@ public class From_Registro_Cliente extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(cboGenero, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtTelefono, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtTelefono, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtFechaNacim, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -216,27 +365,24 @@ public class From_Registro_Cliente extends javax.swing.JFrame {
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(16, 16, 16)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(16, 16, 16)
                         .addComponent(jLabel10)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel7)
                             .addComponent(jLabel8)))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(16, 16, 16)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addGroup(jPanel1Layout.createSequentialGroup()
-                                    .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                    .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                    .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addComponent(jLabel9)
-                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)))))
+                    .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addGroup(jPanel1Layout.createSequentialGroup()
+                            .addComponent(btnRegistrar, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(btnLimpiar, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(btnCerrar, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(jLabel9)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)))
                 .addContainerGap(16, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
@@ -254,9 +400,9 @@ public class From_Registro_Cliente extends javax.swing.JFrame {
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton1)
-                    .addComponent(jButton2)
-                    .addComponent(jButton3))
+                    .addComponent(btnRegistrar)
+                    .addComponent(btnLimpiar)
+                    .addComponent(btnCerrar))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel9)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -281,6 +427,37 @@ public class From_Registro_Cliente extends javax.swing.JFrame {
     private void txtApellidoPaternoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtApellidoPaternoActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtApellidoPaternoActionPerformed
+
+    private void btnCerrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCerrarActionPerformed
+        this.dispose(); // Cierra de forma correcta esta ventana actual
+    }//GEN-LAST:event_btnCerrarActionPerformed
+
+    private void btnRegistrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegistrarActionPerformed
+        // llamado de funcion para validacion de campos
+        if (!validar_campos_formulario()) {
+            return;
+        }
+        String tipoDoc = cboTipoDocumento.getSelectedItem().toString();
+        String numDoc = txtNumeroDocumento.getText().trim();
+        String nombre = txtNombre.getText().trim();
+        String apPaterno = txtApellidoPaterno.getText().trim();
+        String apMaterno = txtApellidoMaterno.getText().trim();
+        String fechaNac = txtFechaNacim.getText().trim();
+        String genero = cboGenero.getSelectedItem().toString();
+        String telefono = txtTelefono.getText().trim();
+
+        Paciente nuevoPaciente = new Paciente(tipoDoc, numDoc, nombre, apPaterno, apMaterno, fechaNac, genero, telefono);
+        listaPacientes.add(nuevoPaciente);
+
+        String nombreCompleto = nombre + " " + apPaterno + " " + apMaterno;
+        Object[] fila = {tipoDoc, numDoc, nombreCompleto, fechaNac, genero, telefono};
+        
+        modeloTabla.addRow(fila);
+
+        guardarEnCSV();
+        JOptionPane.showMessageDialog(this, "Paciente registrado con exito");
+        limpiarCampos();
+    }//GEN-LAST:event_btnRegistrarActionPerformed
 
     /**
      * @param args the command line arguments
@@ -309,11 +486,11 @@ public class From_Registro_Cliente extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnCerrar;
+    private javax.swing.JButton btnLimpiar;
+    private javax.swing.JButton btnRegistrar;
     private javax.swing.JComboBox<String> cboGenero;
     private javax.swing.JComboBox<String> cboTipoDocumento;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
@@ -332,6 +509,7 @@ public class From_Registro_Cliente extends javax.swing.JFrame {
     private javax.swing.JTable tblPacientes;
     private javax.swing.JTextField txtApellidoMaterno;
     private javax.swing.JTextField txtApellidoPaterno;
+    private javax.swing.JFormattedTextField txtFechaNacim;
     private javax.swing.JTextField txtNombre;
     private javax.swing.JTextField txtNumeroDocumento;
     private javax.swing.JTextField txtTelefono;
