@@ -16,10 +16,56 @@ public class Menu extends javax.swing.JFrame {
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Menu.class.getName());
     From_Registro_Cliente fromRegistroCliente = new From_Registro_Cliente();
     From_Registro_Citas fromRegistroCitas = new From_Registro_Citas();
+    // Cargamos las imágenes desde tu paquete de recursos (ajusta la ruta según tu carpeta)
+    javax.swing.ImageIcon iconoClienteOscuro = new javax.swing.ImageIcon(getClass().getResource("/imagenes/usuario.png"));
+    javax.swing.ImageIcon iconoClienteBlanco = new javax.swing.ImageIcon(getClass().getResource("/imagenes/usuario_blanco.png"));
+
+    javax.swing.ImageIcon iconoCitaOscuro = new javax.swing.ImageIcon(getClass().getResource("/imagenes/calendario_oscuro.png"));
+    javax.swing.ImageIcon iconoCitaBlanco = new javax.swing.ImageIcon(getClass().getResource("/imagenes/calendario_blanco.png"));
+
+    private void actualizarEstiloBotones(
+            javax.swing.JButton botonActivo,
+            javax.swing.JButton botonInactivo,
+            javax.swing.ImageIcon iconoActivo,
+            javax.swing.ImageIcon iconoInactivo) {
+
+        // --- BOTÓN SELECCIONADO (AZUL) ---
+        botonActivo.setContentAreaFilled(true);
+        botonActivo.setIcon(iconoActivo); // <--- AQUÍ SE PONE EL ÍCONO BLANCO
+        botonActivo.putClientProperty("FlatLaf.style",
+                "background: #0061c7;"
+                + "foreground: #ffffff;"
+                + "borderWidth: 0;"
+                + "focusWidth: 0;"
+                + "arc: 8;"
+                + "iconTextGap: 12");
+
+        // --- BOTÓN DESELECCIONADO (TRANSPARENTE) ---
+        botonInactivo.setContentAreaFilled(false);
+        botonInactivo.setIcon(iconoInactivo); // <--- AQUÍ SE PONE EL ÍCONO OSCURO
+        botonInactivo.putClientProperty("FlatLaf.style",
+                "foreground: #445566;"
+                + "borderWidth: 0;"
+                + "focusWidth: 0;"
+                + "arc: 8;"
+                + "iconTextGap: 12");
+
+        this.repaint();
+    }
 
     public Menu() {
         initComponents();
         this.setLocationRelativeTo(null);
+        content.setLayout(new java.awt.BorderLayout());
+
+    }
+
+    private void mostrarPanel(javax.swing.JPanel p) {
+        content.removeAll();
+        content.add(p, java.awt.BorderLayout.CENTER);
+
+        content.revalidate();
+        content.repaint();
     }
 
     /**
@@ -32,46 +78,121 @@ public class Menu extends javax.swing.JFrame {
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
-        btn_Registrar_Cliente = new javax.swing.JButton();
+        content = new javax.swing.JPanel();
+        jPanel2 = new javax.swing.JPanel();
         btn_Registrar_Cita = new javax.swing.JButton();
+        btn_Registrar_Cliente = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("MENU");
         setFont(new java.awt.Font("Segoe UI", 1, 28)); // NOI18N
+        setPreferredSize(new java.awt.Dimension(730, 698));
 
-        btn_Registrar_Cliente.setText("Regristrar Pacientes");
-        btn_Registrar_Cliente.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btn_Registrar_ClienteActionPerformed(evt);
-            }
-        });
+        jPanel1.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(220, 224, 230)));
 
-        btn_Registrar_Cita.setText("Registrar Cita");
+        content.setBackground(new java.awt.Color(255, 255, 255));
+
+        javax.swing.GroupLayout contentLayout = new javax.swing.GroupLayout(content);
+        content.setLayout(contentLayout);
+        contentLayout.setHorizontalGroup(
+            contentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 607, Short.MAX_VALUE)
+        );
+        contentLayout.setVerticalGroup(
+            contentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+        );
+
+        jPanel2.setBackground(new java.awt.Color(244, 248, 252));
+        jPanel2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(220, 224, 230)));
+
+        btn_Registrar_Cita.setBackground(new java.awt.Color(244, 248, 252));
+        btn_Registrar_Cita.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        btn_Registrar_Cita.setForeground(new java.awt.Color(36, 29, 49));
+        btn_Registrar_Cita.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/calendario_oscuro.png"))); // NOI18N
+        btn_Registrar_Cita.setText("Citas");
+        btn_Registrar_Cita.setBorderPainted(false);
+        btn_Registrar_Cita.setFocusPainted(false);
+        btn_Registrar_Cita.setHorizontalAlignment(javax.swing.SwingConstants.LEADING);
+        btn_Registrar_Cita.setIconTextGap(12);
+        btn_Registrar_Cita.setOpaque(true);
         btn_Registrar_Cita.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_Registrar_CitaActionPerformed(evt);
             }
         });
 
+        btn_Registrar_Cliente.setBackground(new java.awt.Color(244, 248, 252));
+        btn_Registrar_Cliente.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        btn_Registrar_Cliente.setForeground(new java.awt.Color(36, 29, 49));
+        btn_Registrar_Cliente.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/usuario.png"))); // NOI18N
+        btn_Registrar_Cliente.setText("Pacientes");
+        btn_Registrar_Cliente.setBorderPainted(false);
+        btn_Registrar_Cliente.setFocusPainted(false);
+        btn_Registrar_Cliente.setHorizontalAlignment(javax.swing.SwingConstants.LEADING);
+        btn_Registrar_Cliente.setIconTextGap(12);
+        btn_Registrar_Cliente.setOpaque(true);
+        btn_Registrar_Cliente.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_Registrar_ClienteActionPerformed(evt);
+            }
+        });
+
+        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/Logo_Posta.png"))); // NOI18N
+
+        jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jLabel2.setForeground(new java.awt.Color(102, 102, 102));
+        jLabel2.setText("Cuidamos tu salud");
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGap(15, 15, 15)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel1)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(6, 6, 6)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(btn_Registrar_Cliente, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(btn_Registrar_Cita, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                .addContainerGap(15, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jLabel2)
+                .addGap(32, 32, 32))
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGap(0, 0, 0)
+                .addComponent(jLabel1)
+                .addGap(0, 0, 0)
+                .addComponent(jLabel2)
+                .addGap(20, 20, 20)
+                .addComponent(btn_Registrar_Cliente)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btn_Registrar_Cita)
+                .addContainerGap(428, Short.MAX_VALUE))
+        );
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(56, Short.MAX_VALUE)
-                .addComponent(btn_Registrar_Cliente)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btn_Registrar_Cita, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(56, 56, 56))
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(content, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(84, 84, 84)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btn_Registrar_Cita)
-                    .addComponent(btn_Registrar_Cliente))
-                .addContainerGap(84, Short.MAX_VALUE))
+            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(content, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -89,11 +210,22 @@ public class Menu extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btn_Registrar_ClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_Registrar_ClienteActionPerformed
-        fromRegistroCliente.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        fromRegistroCliente.setVisible(true);
+        actualizarEstiloBotones(btn_Registrar_Cliente, btn_Registrar_Cita, iconoClienteBlanco, iconoCitaOscuro);
+        // Extraemos de forma segura el contenedor interno de la ventana de citas y lo convertimos a JPanel
+        javax.swing.JPanel panelInternoClientes = (javax.swing.JPanel) fromRegistroCliente.getContentPane();
+
+        // Ajustamos sus dimensiones a las de nuestro contenedor principal
+        panelInternoClientes.setSize(content.getWidth(), content.getHeight());
+
+        // Lo pintamos en pantalla dentro de la misma interfaz
+        mostrarPanel(panelInternoClientes);
+
+        // fromRegistroCliente.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        // fromRegistroCliente.setVisible(true);
     }//GEN-LAST:event_btn_Registrar_ClienteActionPerformed
 
     private void btn_Registrar_CitaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_Registrar_CitaActionPerformed
+        actualizarEstiloBotones(btn_Registrar_Cita, btn_Registrar_Cliente, iconoCitaBlanco, iconoClienteOscuro);
         fromRegistroCitas.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         fromRegistroCitas.setVisible(true);
     }//GEN-LAST:event_btn_Registrar_CitaActionPerformed
@@ -115,6 +247,10 @@ public class Menu extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btn_Registrar_Cita;
     private javax.swing.JButton btn_Registrar_Cliente;
+    private javax.swing.JPanel content;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
     // End of variables declaration//GEN-END:variables
 }

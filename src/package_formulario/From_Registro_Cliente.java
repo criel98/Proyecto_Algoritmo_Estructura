@@ -146,8 +146,7 @@ public class From_Registro_Cliente extends javax.swing.JFrame {
 
         initComponents();
         cargar_datos_formulario();
-
-        this.setLocationRelativeTo(null);
+       
         // Diseño bordes redondeados para el formulario
         txtNombre.putClientProperty("JComponent.roundRect", true);
         txtApellidoPaterno.putClientProperty("JComponent.roundRect", true);
