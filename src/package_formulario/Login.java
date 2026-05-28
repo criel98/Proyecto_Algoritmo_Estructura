@@ -3,11 +3,16 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package package_formulario;
+
 import com.formdev.flatlaf.FlatLightLaf;
+import javax.swing.JOptionPane;
 import javax.swing.UIManager;
+import package_clase.Usuario;
+
 public class Login extends javax.swing.JFrame {
-    
+
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Login.class.getName());
+    private int intentosFallidos = 0;
 
     /**
      * Creates new form Login
@@ -16,21 +21,21 @@ public class Login extends javax.swing.JFrame {
         initComponents();
         personalizarDiseño();
     }
+
     private void personalizarDiseño() {
         // Cambiar el texto por defecto del checkbox
         jCheckBox1.setText("Recordarme");
-        
+
         // Colocar placeholders (Texto de sugerencia en el fondo del input)
         txtUser.putClientProperty("JTextField.placeholderText", "Ingrese su usuario");
         txtPass.putClientProperty("JTextField.placeholderText", "Ingrese su contraseña");
-        
+
         // Ojo nativo de FlatLaf para mostrar/ocultar contraseña automáticamente
         txtPass.putClientProperty("JPasswordField.showRevealButton", true);
-        
+
         /* * Agregar iconos vectoriales a los inputs (Pistas de ruta)
          * Nota: Asegúrate de tener las imágenes .svg dentro de tu estructura de paquetes libres
          */
-       
     }
 
     /**
@@ -50,7 +55,7 @@ public class Login extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         txtPass = new javax.swing.JPasswordField();
-        btnIngresar = new javax.swing.JButton();
+        btnLogin = new javax.swing.JButton();
         jCheckBox1 = new javax.swing.JCheckBox();
         jLabel5 = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
@@ -92,11 +97,16 @@ public class Login extends javax.swing.JFrame {
         txtPass.setMinimumSize(new java.awt.Dimension(380, 45));
         txtPass.setPreferredSize(new java.awt.Dimension(380, 45));
 
-        btnIngresar.setBackground(new java.awt.Color(21, 101, 192));
-        btnIngresar.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        btnIngresar.setForeground(new java.awt.Color(255, 255, 255));
-        btnIngresar.setText("INICIAR SESIÓN");
-        btnIngresar.setPreferredSize(new java.awt.Dimension(350, 45));
+        btnLogin.setBackground(new java.awt.Color(21, 101, 192));
+        btnLogin.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        btnLogin.setForeground(new java.awt.Color(255, 255, 255));
+        btnLogin.setText("INICIAR SESIÓN");
+        btnLogin.setPreferredSize(new java.awt.Dimension(350, 45));
+        btnLogin.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnLoginActionPerformed(evt);
+            }
+        });
 
         jCheckBox1.setText("jCheckBox1");
 
@@ -119,7 +129,7 @@ public class Login extends javax.swing.JFrame {
                             .addComponent(jCheckBox1))
                         .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel3Layout.createSequentialGroup()
                             .addGap(17, 17, 17)
-                            .addComponent(btnIngresar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(btnLogin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addComponent(txtUser, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 380, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -143,7 +153,7 @@ public class Login extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addComponent(jCheckBox1)
                 .addGap(12, 12, 12)
-                .addComponent(btnIngresar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btnLogin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(70, 70, 70))
         );
 
@@ -216,6 +226,39 @@ public class Login extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
+    private void btnLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLoginActionPerformed
+        String user = txtUser.getText();
+        String pass = String.valueOf(txtPass.getPassword());
+
+        Usuario usuario = new Usuario(user, pass);
+
+        if (usuario.validarLogin()) {
+            // Si el login es correcto, reiniciamos el contador por seguridad
+            intentosFallidos = 0;
+
+            Menu menu = new Menu();
+            menu.setVisible(true);
+            this.dispose();
+        } else {
+            // Incrementamos el contador de fallos
+            intentosFallidos++;
+
+            if (intentosFallidos >= 3) {
+                // Mensaje de bloqueo definitivo
+                JOptionPane.showMessageDialog(this,"Has superado el límite de 3 intentos. El acceso ha sido bloqueado.","Acceso Bloqueado", JOptionPane.ERROR_MESSAGE);
+
+                // Bloqueamos los componentes para que no pueda seguir intentando
+                txtUser.setEnabled(false);
+                txtPass.setEnabled(false);
+                btnLogin.setEnabled(false); 
+
+            } else {
+                // Mensaje de advertencia mostrando los intentos que le quedan
+                int intentosRestantes = 3 - intentosFallidos; JOptionPane.showMessageDialog(this,"Datos incorrectos. Intentos restantes: " + intentosRestantes,"Error de Autenticación",JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }//GEN-LAST:event_btnLoginActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -228,12 +271,12 @@ public class Login extends javax.swing.JFrame {
         try {
             // Inicializar FlatLaf Light de forma global antes de renderizar el frame
             FlatLightLaf.setup();
-            
+
             // Configuración global de bordes redondeados (Arco de las cajas y botones)
-            UIManager.put("Component.arc", 15);     
-            UIManager.put("TextComponent.arc", 12); 
+            UIManager.put("Component.arc", 15);
+            UIManager.put("TextComponent.arc", 12);
             UIManager.put("Button.innerFocusWidth", 0);
-            
+
         } catch (Exception ex) {
             logger.log(java.util.logging.Level.SEVERE, "Error al cargar FlatLaf", ex);
         }
@@ -243,7 +286,7 @@ public class Login extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnIngresar;
+    private javax.swing.JButton btnLogin;
     private javax.swing.JCheckBox jCheckBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
