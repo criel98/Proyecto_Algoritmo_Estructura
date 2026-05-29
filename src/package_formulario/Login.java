@@ -69,6 +69,7 @@ public class Login extends javax.swing.JFrame {
         setTitle("Posta Médica - Inicio de Sesión");
         setMinimumSize(new java.awt.Dimension(985, 650));
         setPreferredSize(new java.awt.Dimension(985, 650));
+        setResizable(false);
         getContentPane().setLayout(new java.awt.GridBagLayout());
 
         jPanel1.setBackground(new java.awt.Color(245, 249, 253));
@@ -182,9 +183,6 @@ public class Login extends javax.swing.JFrame {
 
         jLabel7.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel7.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/hospital_300.png"))); // NOI18N
-        jLabel7.setMaximumSize(new java.awt.Dimension(300, 300));
-        jLabel7.setMinimumSize(new java.awt.Dimension(300, 300));
-        jLabel7.setPreferredSize(new java.awt.Dimension(300, 300));
 
         jLabel8.setFont(new java.awt.Font("Segoe UI", 1, 20)); // NOI18N
         jLabel8.setForeground(new java.awt.Color(255, 255, 255));

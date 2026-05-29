@@ -10,6 +10,32 @@ public class Paciente {
     private String fechaNacimiento;
     private String genero;
     private String telefono;
+    private Integer edad;
+
+    public int calcularEdad() {
+        if (this.fechaNacimiento == null || this.fechaNacimiento.trim().length() < 10) {
+            return 0;
+        }
+
+        try {
+            // Separamos el string "DD/MM/AAAA" usando las barras diagonales
+            String[] partes = this.fechaNacimiento.split("/");
+            int dia = Integer.parseInt(partes[0]);
+            int mes = Integer.parseInt(partes[1]);
+            int anio = Integer.parseInt(partes[2]);
+
+            // Convertimos las partes a un objeto LocalDate
+            java.time.LocalDate fechaNac = java.time.LocalDate.of(anio, mes, dia);
+            java.time.LocalDate fechaActual = java.time.LocalDate.now();
+
+            // Calculamos el periodo transcurrido entre ambas fechas
+            return java.time.Period.between(fechaNac, fechaActual).getYears();
+
+        } catch (Exception e) {
+            // Si la fecha tiene un formato inválido o está incompleta, retorna 0 por seguridad
+            return 0;
+        }
+    }
 
     // Constructor vacío
     public Paciente() {
@@ -27,6 +53,7 @@ public class Paciente {
         this.fechaNacimiento = fechaNacimiento;
         this.genero = genero;
         this.telefono = telefono;
+        this.edad = calcularEdad();
     }
 
     public String getTipoDocumento() {

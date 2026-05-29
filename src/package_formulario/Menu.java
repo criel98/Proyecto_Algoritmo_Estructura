@@ -88,8 +88,8 @@ public class Menu extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("MENU");
         setFont(new java.awt.Font("Segoe UI", 1, 28)); // NOI18N
-        setMinimumSize(new java.awt.Dimension(790, 732));
-        setPreferredSize(new java.awt.Dimension(790, 732));
+        setMinimumSize(new java.awt.Dimension(900, 732));
+        setPreferredSize(new java.awt.Dimension(900, 732));
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
         jPanel1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(220, 224, 230)));
@@ -100,7 +100,7 @@ public class Menu extends javax.swing.JFrame {
         content.setLayout(contentLayout);
         contentLayout.setHorizontalGroup(
             contentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 607, Short.MAX_VALUE)
+            .addGap(0, 692, Short.MAX_VALUE)
         );
         contentLayout.setVerticalGroup(
             contentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -184,8 +184,8 @@ public class Menu extends javax.swing.JFrame {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE)
-                .addComponent(content, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(content, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -224,8 +224,16 @@ public class Menu extends javax.swing.JFrame {
 
     private void btn_Registrar_CitaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_Registrar_CitaActionPerformed
         actualizarEstiloBotones(btn_Registrar_Cita, btn_Registrar_Cliente, iconoCitaBlanco, iconoClienteOscuro);
-        fromRegistroCitas.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        fromRegistroCitas.setVisible(true);
+         // Extraemos de forma segura el contenedor interno de la ventana de citas y lo convertimos a JPanel
+        javax.swing.JPanel panelInteroPacientes = (javax.swing.JPanel) fromRegistroCitas.getContentPane();
+
+        // Ajustamos sus dimensiones a las de nuestro contenedor principal
+        panelInteroPacientes.setSize(content.getWidth(), content.getHeight());
+
+        // Lo pintamos en pantalla dentro de la misma interfaz
+        mostrarPanel(panelInteroPacientes);
+        //fromRegistroCitas.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        //fromRegistroCitas.setVisible(true);
     }//GEN-LAST:event_btn_Registrar_CitaActionPerformed
 
     /**
