@@ -43,12 +43,18 @@ public class From_Registro_Cliente extends javax.swing.JFrame {
         this.cboGenero.addItem("Seleccione");
         this.cboGenero.addItem("Masculino");
         this.cboGenero.addItem("Femenino");
+
+        //Cargar Combo Emergencia
+        this.cboEmergencia.addItem("Seleccione");
+        this.cboEmergencia.addItem("Emergencia");
+        this.cboEmergencia.addItem("Regular");
     }
 
     // funcion para limpiar campos del formulario
     private void limpiarCampos() {
         cboTipoDocumento.setSelectedIndex(0);
         cboGenero.setSelectedIndex(0);
+        cboEmergencia.setSelectedIndex(0);
         txtNumeroDocumento.setText("");
         txtNombre.setText("");
         txtApellidoPaterno.setText("");
@@ -60,50 +66,57 @@ public class From_Registro_Cliente extends javax.swing.JFrame {
 
     // funcion para validar que todos los campós esten llenos
     private boolean validar_campos_formulario() {
-        String fechaNac = txtFechaNacim.getText().trim();
+        String tipoEmergencia = cboEmergencia.getSelectedItem().toString();
 
-        // validar tipo de documento
+        if (tipoEmergencia.equals("Seleccione")) {
+            JOptionPane.showMessageDialog(this, "Debe indicar si es una Emergencia o atención Regular.", "Validación", JOptionPane.WARNING_MESSAGE);
+            cboEmergencia.requestFocus();
+            return false;
+        }
+
+        // 1. Validaciones OBLIGATORIAS para ambos casos (Emergencia y Regular)
         if (cboTipoDocumento.getSelectedIndex() == 0) {
             JOptionPane.showMessageDialog(this, "Debe seleccionar un Tipo de Documento", "Validación", JOptionPane.WARNING_MESSAGE);
             cboTipoDocumento.requestFocus();
             return false;
         }
 
-        // validar numero de documento
         if (txtNumeroDocumento.getText().trim().isEmpty()) {
             JOptionPane.showMessageDialog(this, "Debe ingresar el número de documento", "Validación", JOptionPane.WARNING_MESSAGE);
             txtNumeroDocumento.requestFocus();
             return false;
         }
 
-        // validar nombres y ambos Apellidos
-        if (txtNombre.getText().trim().isEmpty()
-                || txtApellidoPaterno.getText().trim().isEmpty()
-                || txtApellidoMaterno.getText().trim().isEmpty()) {
-
-            JOptionPane.showMessageDialog(this, "El Nombre, Apellido Paterno y Apellido Materno son campos obligatorios.", "Validación", JOptionPane.WARNING_MESSAGE);
+        if (txtNombre.getText().trim().isEmpty() || txtApellidoPaterno.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "El Nombre y Apellido Paterno son obligatorios siempre.", "Validación", JOptionPane.WARNING_MESSAGE);
             return false;
         }
 
-        // validar estructura de la fecha de nacimiento
-        if (fechaNac.equals("//") || fechaNac.length() < 10) {
-            JOptionPane.showMessageDialog(this, "Por favor, complete la Fecha de Nacimiento correctamente (Día/Mes/Año).", "Validación", JOptionPane.WARNING_MESSAGE);
-            txtFechaNacim.requestFocus();
-            return false;
-        }
+        // 2. Validaciones EXCLUSIVAS para atención Regular (Ignorar si es emergencia)
+        if (tipoEmergencia.equals("Regular")) {
+            if (txtApellidoMaterno.getText().trim().isEmpty()) {
+                JOptionPane.showMessageDialog(this, "El Apellido Materno es obligatorio.", "Validación", JOptionPane.WARNING_MESSAGE);
+                return false;
+            }
 
-        // validar selección de género
-        if (cboGenero.getSelectedIndex() == 0) {
-            JOptionPane.showMessageDialog(this, "Debe seleccionar un Género", "Validación", JOptionPane.WARNING_MESSAGE);
-            cboGenero.requestFocus();
-            return false;
-        }
+            String fechaNac = txtFechaNacim.getText().trim();
+            if (fechaNac.equals("//") || fechaNac.length() < 10) {
+                JOptionPane.showMessageDialog(this, "Complete la Fecha de Nacimiento correctamente (Día/Mes/Año).", "Validación", JOptionPane.WARNING_MESSAGE);
+                txtFechaNacim.requestFocus();
+                return false;
+            }
 
-        // validar teléfono de contacto
-        if (txtTelefono.getText().trim().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Debe rellenar el número de contacto", "Validación", JOptionPane.WARNING_MESSAGE);
-            txtTelefono.requestFocus();
-            return false;
+            if (cboGenero.getSelectedIndex() == 0) {
+                JOptionPane.showMessageDialog(this, "Debe seleccionar un Género", "Validación", JOptionPane.WARNING_MESSAGE);
+                cboGenero.requestFocus();
+                return false;
+            }
+
+            if (txtTelefono.getText().trim().isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Debe rellenar el número de contacto", "Validación", JOptionPane.WARNING_MESSAGE);
+                txtTelefono.requestFocus();
+                return false;
+            }
         }
 
         return true;
@@ -122,6 +135,26 @@ public class From_Registro_Cliente extends javax.swing.JFrame {
         txtTelefono.putClientProperty("JComponent.roundRect", true);
 
         cargarTablaDesdeGestor();
+        cboEmergencia.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                String tipo = cboEmergencia.getSelectedItem().toString();
+                if (tipo.equals("Emergencia")) {
+                    // Bloquear campos no vitales
+                    txtApellidoMaterno.setEnabled(false);
+                    txtFechaNacim.setEnabled(false);
+                    cboGenero.setEnabled(false);
+                    txtTelefono.setEnabled(false);
+
+                } else {
+                    // Habilitar campos para registro regular
+                    txtApellidoMaterno.setEnabled(true);
+                    txtFechaNacim.setEnabled(true);
+                    cboGenero.setEnabled(true);
+                    txtTelefono.setEnabled(true);
+
+                }
+            }
+        });
     }
 
     /**
@@ -161,16 +194,22 @@ public class From_Registro_Cliente extends javax.swing.JFrame {
         txtFechaNacim = new javax.swing.JFormattedTextField();
         txtEdad = new javax.swing.JTextField();
         jLabel10 = new javax.swing.JLabel();
+        jLabel13 = new javax.swing.JLabel();
+        cboEmergencia = new javax.swing.JComboBox<>();
+        btnEditar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Registro de Clientes - Posta Médica");
+        setMinimumSize(new java.awt.Dimension(852, 866));
+        setPreferredSize(new java.awt.Dimension(852, 866));
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
 
         btnRegistrar.setBackground(new java.awt.Color(0, 102, 204));
         btnRegistrar.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         btnRegistrar.setForeground(new java.awt.Color(255, 255, 255));
-        btnRegistrar.setText("Registrar Cliente");
+        btnRegistrar.setText("Registrar Paciente");
+        btnRegistrar.setPreferredSize(new java.awt.Dimension(180, 40));
         btnRegistrar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnRegistrarActionPerformed(evt);
@@ -225,10 +264,17 @@ public class From_Registro_Cliente extends javax.swing.JFrame {
         btnLimpiar.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         btnLimpiar.setForeground(new java.awt.Color(51, 51, 51));
         btnLimpiar.setText("Limpiar");
+        btnLimpiar.setPreferredSize(new java.awt.Dimension(180, 40));
+        btnLimpiar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnLimpiarActionPerformed(evt);
+            }
+        });
 
         btnCerrar.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         btnCerrar.setForeground(new java.awt.Color(51, 51, 51));
         btnCerrar.setText("Cerrar");
+        btnCerrar.setPreferredSize(new java.awt.Dimension(180, 40));
         btnCerrar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnCerrarActionPerformed(evt);
@@ -315,6 +361,12 @@ public class From_Registro_Cliente extends javax.swing.JFrame {
 
         jLabel10.setText("Edad:");
 
+        jLabel13.setForeground(new java.awt.Color(22, 30, 64));
+        jLabel13.setText("Emergencia :");
+
+        cboEmergencia.setMinimumSize(new java.awt.Dimension(64, 30));
+        cboEmergencia.setPreferredSize(new java.awt.Dimension(64, 30));
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -336,9 +388,7 @@ public class From_Registro_Cliente extends javax.swing.JFrame {
                             .addComponent(cboGenero, javax.swing.GroupLayout.PREFERRED_SIZE, 169, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(18, 18, 18)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addComponent(jLabel12)
-                                .addGap(0, 0, Short.MAX_VALUE))
+                            .addComponent(jLabel12)
                             .addComponent(txtTelefono, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
@@ -350,23 +400,28 @@ public class From_Registro_Cliente extends javax.swing.JFrame {
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel2Layout.createSequentialGroup()
                                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel4)
-                                    .addComponent(txtNumeroDocumento, javax.swing.GroupLayout.PREFERRED_SIZE, 302, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(56, 56, 56))
-                            .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jLabel2)
                                     .addComponent(txtApellidoPaterno, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addGap(18, 18, 18)
                                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jLabel5)
-                                    .addComponent(txtApellidoMaterno, javax.swing.GroupLayout.DEFAULT_SIZE, 172, Short.MAX_VALUE))))))
-                .addGap(13, 13, 13))
+                                    .addComponent(txtApellidoMaterno, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(txtNumeroDocumento, javax.swing.GroupLayout.PREFERRED_SIZE, 302, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel4))
+                                .addGap(18, 18, 18)
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(jPanel2Layout.createSequentialGroup()
+                                        .addComponent(jLabel13)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                    .addComponent(cboEmergencia, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))))
+                .addGap(15, 15, 15))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(8, 8, 8)
+                .addGap(21, 21, 21)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(txtEdad, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel2Layout.createSequentialGroup()
@@ -375,11 +430,13 @@ public class From_Registro_Cliente extends javax.swing.JFrame {
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel3)
-                            .addComponent(jLabel4))
+                            .addComponent(jLabel4)
+                            .addComponent(jLabel13))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(cboTipoDocumento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtNumeroDocumento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(txtNumeroDocumento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(cboEmergencia, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addGroup(jPanel2Layout.createSequentialGroup()
@@ -387,13 +444,13 @@ public class From_Registro_Cliente extends javax.swing.JFrame {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(txtNombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addComponent(jLabel2)
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jLabel2)
+                                    .addComponent(jLabel5))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(txtApellidoPaterno, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addComponent(jLabel5)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(txtApellidoMaterno, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(txtApellidoPaterno, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(txtApellidoMaterno, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
@@ -412,6 +469,16 @@ public class From_Registro_Cliente extends javax.swing.JFrame {
                 .addContainerGap(12, Short.MAX_VALUE))
         );
 
+        btnEditar.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        btnEditar.setForeground(new java.awt.Color(51, 51, 51));
+        btnEditar.setText("Editar");
+        btnEditar.setPreferredSize(new java.awt.Dimension(180, 40));
+        btnEditar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEditarActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -428,10 +495,12 @@ public class From_Registro_Cliente extends javax.swing.JFrame {
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(btnRegistrar, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(37, 37, 37)
+                                .addComponent(btnRegistrar, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(72, 72, 72)
                                 .addComponent(btnLimpiar, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGap(72, 72, 72)
+                                .addComponent(btnEditar, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 77, Short.MAX_VALUE)
                                 .addComponent(btnCerrar, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jScrollPane1))
@@ -448,9 +517,10 @@ public class From_Registro_Cliente extends javax.swing.JFrame {
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnRegistrar)
-                    .addComponent(btnLimpiar)
-                    .addComponent(btnCerrar))
+                    .addComponent(btnRegistrar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnLimpiar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnCerrar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnEditar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel9)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -515,7 +585,7 @@ public class From_Registro_Cliente extends javax.swing.JFrame {
     private void txtFechaNacimKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtFechaNacimKeyReleased
         String fechaTexto = txtFechaNacim.getText().trim();
 
-               if (fechaTexto.length() == 10 && !fechaTexto.contains(" ")) {
+        if (fechaTexto.length() == 10 && !fechaTexto.contains(" ")) {
             // Usamos una instancia temporal de Paciente para invocar el cálculo matemático
             Paciente temporal = new Paciente("", "", "", "", "", fechaTexto, "", "");
             int edadCalculada = temporal.calcularEdad();
@@ -530,6 +600,14 @@ public class From_Registro_Cliente extends javax.swing.JFrame {
         }
 
     }//GEN-LAST:event_txtFechaNacimKeyReleased
+
+    private void btnLimpiarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLimpiarActionPerformed
+        limpiarCampos();
+    }//GEN-LAST:event_btnLimpiarActionPerformed
+
+    private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnEditarActionPerformed
 
     /**
      * @param args the command line arguments
@@ -559,14 +637,17 @@ public class From_Registro_Cliente extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCerrar;
+    private javax.swing.JButton btnEditar;
     private javax.swing.JButton btnLimpiar;
     private javax.swing.JButton btnRegistrar;
+    private javax.swing.JComboBox<String> cboEmergencia;
     private javax.swing.JComboBox<String> cboGenero;
     private javax.swing.JComboBox<String> cboTipoDocumento;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
+    private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;

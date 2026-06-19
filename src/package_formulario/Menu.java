@@ -84,12 +84,14 @@ public class Menu extends javax.swing.JFrame {
         btn_Registrar_Cliente = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
+        jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("MENU");
         setFont(new java.awt.Font("Segoe UI", 1, 28)); // NOI18N
-        setMinimumSize(new java.awt.Dimension(900, 732));
-        setPreferredSize(new java.awt.Dimension(900, 732));
+        setMinimumSize(new java.awt.Dimension(1090, 825));
+        setPreferredSize(new java.awt.Dimension(1090, 825));
+        setResizable(false);
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
         jPanel1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(220, 224, 230)));
@@ -100,7 +102,7 @@ public class Menu extends javax.swing.JFrame {
         content.setLayout(contentLayout);
         contentLayout.setHorizontalGroup(
             contentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 692, Short.MAX_VALUE)
+            .addGap(0, 852, Short.MAX_VALUE)
         );
         contentLayout.setVerticalGroup(
             contentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -109,8 +111,8 @@ public class Menu extends javax.swing.JFrame {
 
         jPanel2.setBackground(new java.awt.Color(244, 248, 252));
         jPanel2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(220, 224, 230)));
-        jPanel2.setMinimumSize(new java.awt.Dimension(230, 701));
-        jPanel2.setPreferredSize(new java.awt.Dimension(230, 730));
+        jPanel2.setMinimumSize(new java.awt.Dimension(230, 866));
+        jPanel2.setPreferredSize(new java.awt.Dimension(230, 866));
 
         btn_Registrar_Cita.setBackground(new java.awt.Color(244, 248, 252));
         btn_Registrar_Cita.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
@@ -152,16 +154,25 @@ public class Menu extends javax.swing.JFrame {
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel2.setText("Cuidamos tu salud");
 
+        jButton1.setBackground(new java.awt.Color(244, 248, 252));
+        jButton1.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jButton1.setText("Triage");
+        jButton1.setBorderPainted(false);
+        jButton1.setHorizontalAlignment(javax.swing.SwingConstants.LEADING);
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 228, Short.MAX_VALUE)
             .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+            .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(btn_Registrar_Cita, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(btn_Registrar_Cliente, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(btn_Registrar_Cliente, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
@@ -175,7 +186,9 @@ public class Menu extends javax.swing.JFrame {
                 .addComponent(btn_Registrar_Cliente)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btn_Registrar_Cita)
-                .addContainerGap(465, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(557, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -254,6 +267,7 @@ public class Menu extends javax.swing.JFrame {
     private javax.swing.JButton btn_Registrar_Cita;
     private javax.swing.JButton btn_Registrar_Cliente;
     private javax.swing.JPanel content;
+    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
